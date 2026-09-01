@@ -15,12 +15,12 @@ export async function fetchYahooFinancePrices(tickers: string[]): Promise<{ [key
 
   for (const ticker of tickers) {
     try {
-      // Yahoo Finance API endpoint
+      // Yahoo Finance Chart API endpoint - more reliable
       const response = await fetch(
-        `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${ticker}?modules=price`,
+        `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`,
         {
           headers: {
-            'User-Agent': 'Mozilla/5.0',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
           },
         }
       );
@@ -31,10 +31,17 @@ export async function fetchYahooFinancePrices(tickers: string[]): Promise<{ [key
       }
 
       const data = await response.json();
-      const currentPrice = data.quoteSummary?.result?.[0]?.price?.regularMarketPrice?.raw;
+      const result = data.chart?.result?.[0];
 
-      if (currentPrice) {
-        prices[ticker] = currentPrice;
+      if (result) {
+        // Get the most recent close price
+        const closes = result.indicators?.quote?.[0]?.close;
+        if (closes && closes.length > 0) {
+          const latestPrice = closes[closes.length - 1];
+          if (latestPrice) {
+            prices[ticker] = latestPrice;
+          }
+        }
       }
     } catch (error) {
       console.error(`Error fetching price for ${ticker}:`, error);
