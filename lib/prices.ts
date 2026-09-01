@@ -1,89 +1,67 @@
-import fs from 'fs';
-import path from 'path';
+const FINNHUB_QUOTE_URL = 'https://finnhub.io/api/v1/quote';
 
-const PRICES_FILE = process.env.NODE_ENV === 'production'
-  ? '/tmp/prices.json'
-  : path.join(process.cwd(), 'lib', 'prices.json');
+// How long a price is reused before Next.js re-fetches it from Finnhub.
+// This value is what makes prices durable across serverless invocations:
+// Next's fetch cache is a shared platform-level cache, not local disk, so
+// every instance of this function sees the same cached result.
+const PRICE_CACHE_SECONDS = 300;
 
-interface PriceData {
-  [ticker: string]: number;
+export interface PriceResult {
+  prices: Record<string, number>;
+  failedTickers: string[];
   timestamp: number;
 }
 
-export async function fetchYahooFinancePrices(tickers: string[]): Promise<{ [key: string]: number }> {
-  const prices: { [key: string]: number } = {};
-
-  for (const ticker of tickers) {
-    try {
-      // Yahoo Finance Chart API endpoint - more reliable
-      const response = await fetch(
-        `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`,
-        {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          },
-        }
-      );
-
-      if (!response.ok) {
-        console.error(`Failed to fetch ${ticker}: ${response.statusText}`);
-        continue;
-      }
-
-      const data = await response.json();
-      const result = data.chart?.result?.[0];
-
-      if (result) {
-        // Get the most recent close price
-        const closes = result.indicators?.quote?.[0]?.close;
-        if (closes && closes.length > 0) {
-          const latestPrice = closes[closes.length - 1];
-          if (latestPrice) {
-            prices[ticker] = latestPrice;
-          }
-        }
-      }
-    } catch (error) {
-      console.error(`Error fetching price for ${ticker}:`, error);
-    }
-  }
-
-  return prices;
-}
-
-export function savePrices(prices: { [key: string]: number }): void {
-  const data: PriceData = {
-    ...prices,
-    timestamp: Date.now(),
-  };
-
-  fs.writeFileSync(PRICES_FILE, JSON.stringify(data, null, 2));
-}
-
-export function getPrices(): { [key: string]: number } | null {
+async function fetchQuote(ticker: string, apiKey: string): Promise<number | null> {
   try {
-    if (fs.existsSync(PRICES_FILE)) {
-      const data = JSON.parse(fs.readFileSync(PRICES_FILE, 'utf-8')) as PriceData;
-      // Return all except timestamp
-      const { timestamp, ...prices } = data;
-      return prices;
-    }
-  } catch (error) {
-    console.error('Error reading prices file:', error);
-  }
+    const url = `${FINNHUB_QUOTE_URL}?symbol=${encodeURIComponent(ticker)}&token=${apiKey}`;
+    const response = await fetch(url, { next: { revalidate: PRICE_CACHE_SECONDS } });
 
-  return null;
+    if (!response.ok) {
+      console.error(`Failed to fetch ${ticker}: ${response.status} ${response.statusText}`);
+      return null;
+    }
+
+    const data = await response.json();
+
+    if (data.error) {
+      console.error(`Finnhub error for ${ticker}: ${data.error}`);
+      return null;
+    }
+
+    // Finnhub returns c: 0 for unknown/untradeable symbols.
+    if (typeof data.c === 'number' && data.c > 0) {
+      return data.c;
+    }
+
+    console.error(`No usable price for ${ticker}:`, data);
+    return null;
+  } catch (error) {
+    console.error(`Error fetching price for ${ticker}:`, error);
+    return null;
+  }
 }
 
-export function getPricesTimestamp(): number | null {
-  try {
-    if (fs.existsSync(PRICES_FILE)) {
-      const data = JSON.parse(fs.readFileSync(PRICES_FILE, 'utf-8')) as PriceData;
-      return data.timestamp;
-    }
-  } catch (error) {
-    console.error('Error reading prices file:', error);
+export async function getPrices(tickers: string[]): Promise<PriceResult> {
+  const apiKey = process.env.FINNHUB_API_KEY;
+  const prices: Record<string, number> = {};
+  const failedTickers: string[] = [];
+
+  if (!apiKey) {
+    console.error('FINNHUB_API_KEY is not set');
+    return { prices, failedTickers: tickers, timestamp: Date.now() };
   }
 
-  return null;
+  await Promise.all(
+    tickers.map(async (ticker) => {
+      const price = await fetchQuote(ticker, apiKey);
+      if (price !== null) {
+        prices[ticker] = price;
+      } else {
+        failedTickers.push(ticker);
+      }
+    })
+  );
+
+  return { prices, failedTickers, timestamp: Date.now() };
 }

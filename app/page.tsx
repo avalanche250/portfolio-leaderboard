@@ -15,6 +15,7 @@ export default function Home() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
   const [refreshTime, setRefreshTime] = useState<string>('');
 
   useEffect(() => {
@@ -32,6 +33,7 @@ export default function Home() {
         const data = await res.json();
         setLeaderboard(data.leaderboard);
         setError(null);
+        setWarning(data.warning || null);
 
         if (data.leaderboard[0]?.lastUpdated) {
           setRefreshTime(new Date(data.leaderboard[0].lastUpdated).toLocaleString());
@@ -67,6 +69,12 @@ export default function Home() {
         {error && (
           <div className="bg-red-900/20 border border-red-500/50 text-red-300 p-4 rounded-lg mb-6">
             {error}
+          </div>
+        )}
+
+        {!error && warning && (
+          <div className="bg-amber-900/20 border border-amber-500/50 text-amber-300 p-4 rounded-lg mb-6 text-sm">
+            {warning}
           </div>
         )}
 

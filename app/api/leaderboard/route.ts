@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getPrices, getPricesTimestamp } from '@/lib/prices';
+import { getPrices } from '@/lib/prices';
 import teamsData from '@/lib/teams.json';
 
 interface TeamLeaderboard {
@@ -9,31 +9,29 @@ interface TeamLeaderboard {
   initialValue: number;
   gainLoss: number;
   percentGain: number;
-  lastUpdated: string | null;
+  lastUpdated: string;
 }
+
+const STARTING_CAPITAL = 1000000;
 
 export async function GET() {
   try {
-    const prices = getPrices();
-    const pricesTimestamp = getPricesTimestamp();
+    const tickers = new Set<string>();
+    teamsData.teams.forEach((team) => {
+      team.positions.forEach((position) => tickers.add(position.ticker));
+    });
 
-    if (!prices) {
-      return NextResponse.json(
-        { error: 'Prices not yet loaded. Please check back after market close.' },
-        { status: 503 }
-      );
-    }
-
-    const STARTING_CAPITAL = 1000000;
+    const { prices, failedTickers, timestamp } = await getPrices(Array.from(tickers));
 
     const leaderboard: TeamLeaderboard[] = teamsData.teams.map((team) => {
       let portfolioValue = 0;
       let initialValue = 0;
 
       team.positions.forEach((position) => {
-        const currentPrice = prices[position.ticker];
-        const positionValue = currentPrice ? currentPrice * position.shares : 0;
-        portfolioValue += positionValue;
+        // Fall back to cost basis (0% gain) for a position whose live price
+        // is temporarily unavailable, instead of dropping it to $0.
+        const currentPrice = prices[position.ticker] ?? position.initialInvestment / position.shares;
+        portfolioValue += currentPrice * position.shares;
         initialValue += position.initialInvestment;
       });
 
@@ -47,7 +45,7 @@ export async function GET() {
         initialValue: parseFloat(initialValue.toFixed(2)),
         gainLoss: parseFloat(gainLoss.toFixed(2)),
         percentGain: parseFloat(percentGain),
-        lastUpdated: pricesTimestamp ? new Date(pricesTimestamp).toISOString() : null,
+        lastUpdated: new Date(timestamp).toISOString(),
       };
     });
 
@@ -59,7 +57,13 @@ export async function GET() {
       team.rank = index + 1;
     });
 
-    return NextResponse.json({ leaderboard });
+    return NextResponse.json({
+      leaderboard,
+      warning:
+        failedTickers.length > 0
+          ? `Live price unavailable for: ${failedTickers.join(', ')}. Showing cost basis for these positions until the next refresh.`
+          : null,
+    });
   } catch (error) {
     console.error('Error calculating leaderboard:', error);
     return NextResponse.json(
