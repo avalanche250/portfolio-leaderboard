@@ -1,7 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 
-const PRICES_FILE = path.join(process.cwd(), 'lib', 'prices.json');
+const PRICES_FILE = process.env.NODE_ENV === 'production'
+  ? '/tmp/prices.json'
+  : path.join(process.cwd(), 'lib', 'prices.json');
 
 interface PriceData {
   [ticker: string]: number;
