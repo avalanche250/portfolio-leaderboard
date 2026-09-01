@@ -114,8 +114,9 @@ export default function Home() {
                         entry.gainLoss >= 0 ? 'text-green-400' : 'text-red-400'
                       }`}
                     >
-                      {entry.gainLoss >= 0 ? '+' : ''}
-                      ${entry.gainLoss.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                      {entry.gainLoss >= 0
+                        ? `+$${entry.gainLoss.toLocaleString('en-US', { maximumFractionDigits: 2 })}`
+                        : `-$${Math.abs(entry.gainLoss).toLocaleString('en-US', { maximumFractionDigits: 2 })}`}
                     </td>
                     <td
                       className={`px-4 py-4 text-right font-bold text-lg ${
