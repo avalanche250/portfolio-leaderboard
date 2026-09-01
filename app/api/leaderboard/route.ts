@@ -2,6 +2,13 @@ import { NextResponse } from 'next/server';
 import { getPrices } from '@/lib/prices';
 import teamsData from '@/lib/teams.json';
 
+interface TeamPosition {
+  ticker: string;
+  avgCost: number;
+  currentPrice: number;
+  percentChange: number;
+}
+
 interface TeamLeaderboard {
   rank: number;
   name: string;
@@ -10,6 +17,7 @@ interface TeamLeaderboard {
   gainLoss: number;
   percentGain: number;
   lastUpdated: string;
+  positions: TeamPosition[];
 }
 
 const STARTING_CAPITAL = 1000000;
@@ -27,12 +35,20 @@ export async function GET() {
       let portfolioValue = 0;
       let initialValue = 0;
 
-      team.positions.forEach((position) => {
+      const positions: TeamPosition[] = team.positions.map((position) => {
+        const avgCost = position.initialInvestment / position.shares;
         // Fall back to cost basis (0% gain) for a position whose live price
         // is temporarily unavailable, instead of dropping it to $0.
-        const currentPrice = prices[position.ticker] ?? position.initialInvestment / position.shares;
+        const currentPrice = prices[position.ticker] ?? avgCost;
         portfolioValue += currentPrice * position.shares;
         initialValue += position.initialInvestment;
+
+        return {
+          ticker: position.ticker,
+          avgCost: parseFloat(avgCost.toFixed(2)),
+          currentPrice: parseFloat(currentPrice.toFixed(2)),
+          percentChange: parseFloat((((currentPrice - avgCost) / avgCost) * 100).toFixed(2)),
+        };
       });
 
       const gainLoss = portfolioValue - STARTING_CAPITAL;
@@ -46,6 +62,7 @@ export async function GET() {
         gainLoss: parseFloat(gainLoss.toFixed(2)),
         percentGain: parseFloat(percentGain),
         lastUpdated: new Date(timestamp).toISOString(),
+        positions,
       };
     });
 

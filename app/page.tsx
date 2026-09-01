@@ -1,6 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
+
+interface TeamPosition {
+  ticker: string;
+  avgCost: number;
+  currentPrice: number;
+  percentChange: number;
+}
 
 interface LeaderboardEntry {
   rank: number;
@@ -9,6 +16,7 @@ interface LeaderboardEntry {
   gainLoss: number;
   percentGain: number;
   lastUpdated: string | null;
+  positions: TeamPosition[];
 }
 
 export default function Home() {
@@ -17,6 +25,19 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
   const [refreshTime, setRefreshTime] = useState<string>('');
+  const [expandedTeams, setExpandedTeams] = useState<Set<string>>(new Set());
+
+  const toggleTeam = (name: string) => {
+    setExpandedTeams((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) {
+        next.delete(name);
+      } else {
+        next.add(name);
+      }
+      return next;
+    });
+  };
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -99,35 +120,79 @@ export default function Home() {
                 </tr>
               </thead>
               <tbody>
-                {leaderboard.map((entry) => (
-                  <tr
-                    key={entry.name}
-                    className="border-b border-slate-700 hover:bg-slate-800/50 transition-colors"
-                  >
-                    <td className="px-4 py-4 text-white font-bold text-lg">#{entry.rank}</td>
-                    <td className="px-4 py-4 text-white">{entry.name}</td>
-                    <td className="px-4 py-4 text-right text-white font-semibold">
-                      ${entry.portfolioValue.toLocaleString('en-US', { maximumFractionDigits: 2 })}
-                    </td>
-                    <td
-                      className={`px-4 py-4 text-right font-semibold ${
-                        entry.gainLoss >= 0 ? 'text-green-400' : 'text-red-400'
-                      }`}
-                    >
-                      {entry.gainLoss >= 0
-                        ? `+$${entry.gainLoss.toLocaleString('en-US', { maximumFractionDigits: 2 })}`
-                        : `-$${Math.abs(entry.gainLoss).toLocaleString('en-US', { maximumFractionDigits: 2 })}`}
-                    </td>
-                    <td
-                      className={`px-4 py-4 text-right font-bold text-lg ${
-                        entry.percentGain >= 0 ? 'text-green-400' : 'text-red-400'
-                      }`}
-                    >
-                      {entry.percentGain >= 0 ? '+' : ''}
-                      {entry.percentGain}%
-                    </td>
-                  </tr>
-                ))}
+                {leaderboard.map((entry) => {
+                  const isExpanded = expandedTeams.has(entry.name);
+                  return (
+                    <Fragment key={entry.name}>
+                      <tr
+                        onClick={() => toggleTeam(entry.name)}
+                        className="border-b border-slate-700 hover:bg-slate-800/50 transition-colors cursor-pointer"
+                      >
+                        <td className="px-4 py-4 text-white font-bold text-lg">#{entry.rank}</td>
+                        <td className="px-4 py-4 text-white">
+                          <span
+                            className={`inline-block mr-2 text-slate-500 text-xs transition-transform ${
+                              isExpanded ? 'rotate-90' : ''
+                            }`}
+                          >
+                            &#9654;
+                          </span>
+                          {entry.name}
+                        </td>
+                        <td className="px-4 py-4 text-right text-white font-semibold">
+                          ${entry.portfolioValue.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                        </td>
+                        <td
+                          className={`px-4 py-4 text-right font-semibold ${
+                            entry.gainLoss >= 0 ? 'text-green-400' : 'text-red-400'
+                          }`}
+                        >
+                          {entry.gainLoss >= 0
+                            ? `+$${entry.gainLoss.toLocaleString('en-US', { maximumFractionDigits: 2 })}`
+                            : `-$${Math.abs(entry.gainLoss).toLocaleString('en-US', { maximumFractionDigits: 2 })}`}
+                        </td>
+                        <td
+                          className={`px-4 py-4 text-right font-bold text-lg ${
+                            entry.percentGain >= 0 ? 'text-green-400' : 'text-red-400'
+                          }`}
+                        >
+                          {entry.percentGain >= 0 ? '+' : ''}
+                          {entry.percentGain}%
+                        </td>
+                      </tr>
+                      {isExpanded && (
+                        <tr className="border-b border-slate-700 bg-slate-900/40">
+                          <td colSpan={5} className="px-4 py-3">
+                            <div className="flex flex-wrap gap-3">
+                              {entry.positions.map((position) => (
+                                <div
+                                  key={position.ticker}
+                                  className="min-w-[160px] rounded-lg border border-slate-700 bg-slate-800/60 px-4 py-2"
+                                >
+                                  <div className="text-sm font-semibold text-white">{position.ticker}</div>
+                                  <div className="text-xs text-slate-400">
+                                    Avg cost $
+                                    {position.avgCost.toLocaleString('en-US', { maximumFractionDigits: 2 })} →
+                                    {' $'}
+                                    {position.currentPrice.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                                  </div>
+                                  <div
+                                    className={`text-xs font-semibold ${
+                                      position.percentChange >= 0 ? 'text-green-400' : 'text-red-400'
+                                    }`}
+                                  >
+                                    {position.percentChange >= 0 ? '+' : ''}
+                                    {position.percentChange}%
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  );
+                })}
               </tbody>
             </table>
           </div>
