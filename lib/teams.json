@@ -27,7 +27,7 @@
     {
       "name": "Alex's group",
       "positions": [
-        { "ticker": "AMZN", "shares": 271.6535, "initialInvestment": 450000 },
+        { "ticker": "AMZN", "shares": 1771.6535, "initialInvestment": 450000 },
         { "ticker": "RTX", "shares": 1707.3171, "initialInvestment": 350000 },
         { "ticker": "RARE", "shares": 8000, "initialInvestment": 200000 }
       ]
