@@ -43,12 +43,12 @@ async function fetchQuote(ticker: string, apiKey: string): Promise<number | null
 }
 
 export async function getPrices(tickers: string[]): Promise<PriceResult> {
-  const apiKey = process.env.FINNHUB_API_KEY;
+  const apiKey = process.env.FINNHUB_API_KEY || process.env.FINNHUB_KEY_1;
   const prices: Record<string, number> = {};
   const failedTickers: string[] = [];
 
   if (!apiKey) {
-    console.error('FINNHUB_API_KEY is not set');
+    console.error('No Finnhub API key set (checked FINNHUB_API_KEY and FINNHUB_KEY_1)');
     return { prices, failedTickers: tickers, timestamp: Date.now() };
   }
 
