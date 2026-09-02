@@ -140,7 +140,11 @@ export default function Home() {
                           {entry.name}
                         </td>
                         <td className="px-4 py-4 text-right text-white font-semibold">
-                          ${entry.portfolioValue.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                          $
+                          {entry.portfolioValue.toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
                         </td>
                         <td
                           className={`px-4 py-4 text-right font-semibold ${
