@@ -3,181 +3,73 @@
     {
       "name": "Jackson's group",
       "positions": [
-        {
-          "ticker": "MCD",
-          "shares": 1531.921412,
-          "initialInvestment": 400000
-        },
-        {
-          "ticker": "ORCL",
-          "shares": 1769.034815,
-          "initialInvestment": 250000
-        },
-        {
-          "ticker": "ONON",
-          "shares": 12621.70934,
-          "initialInvestment": 350000
-        }
+        { "ticker": "MCD", "shares": 1532.567, "initialInvestment": 400000 },
+        { "ticker": "ORCL", "shares": 1773.0496, "initialInvestment": 250000 },
+        { "ticker": "ONON", "shares": 12962.96296, "initialInvestment": 350000 }
       ]
     },
     {
       "name": "McClain's group",
       "positions": [
-        {
-          "ticker": "NVDA",
-          "shares": 1701.618837,
-          "initialInvestment": 370000
-        },
-        {
-          "ticker": "PLTR",
-          "shares": 2056.469542,
-          "initialInvestment": 370000
-        },
-        {
-          "ticker": "SOFI",
-          "shares": 15249.266862,
-          "initialInvestment": 260000
-        }
+        { "ticker": "NVDA", "shares": 1705.069, "initialInvestment": 370000 },
+        { "ticker": "PLTR", "shares": 2055.555556, "initialInvestment": 370000 },
+        { "ticker": "SOFI", "shares": 15294.11765, "initialInvestment": 260000 }
       ]
     },
     {
       "name": "Duncans group",
       "positions": [
-        {
-          "ticker": "MSFT",
-          "shares": 665.309435,
-          "initialInvestment": 333333.3333
-        },
-        {
-          "ticker": "AZO",
-          "shares": 112.391247,
-          "initialInvestment": 333333.3333
-        },
-        {
-          "ticker": "DKS",
-          "shares": 2507.208223,
-          "initialInvestment": 333333.3333
-        }
+        { "ticker": "MSFT", "shares": 666.6666667, "initialInvestment": 333333.3333 },
+        { "ticker": "AZO", "shares": 112.3848, "initialInvestment": 333333.3333 },
+        { "ticker": "DKS", "shares": 2525.252525, "initialInvestment": 333333.3333 }
       ]
     },
     {
       "name": "Alex's group",
       "positions": [
-        {
-          "ticker": "AMZN",
-          "shares": 1765.259689,
-          "initialInvestment": 450000
-        },
-        {
-          "ticker": "RTX",
-          "shares": 1705.985572,
-          "initialInvestment": 350000
-        },
-        {
-          "ticker": "RARE",
-          "shares": 7748.934522,
-          "initialInvestment": 200000
-        }
+        { "ticker": "AMZN", "shares": 1771.6535, "initialInvestment": 450000 },
+        { "ticker": "RTX", "shares": 1707.3171, "initialInvestment": 350000 },
+        { "ticker": "RARE", "shares": 8000, "initialInvestment": 200000 }
       ]
     },
     {
       "name": "Caleb's group",
       "positions": [
-        {
-          "ticker": "MU",
-          "shares": 396.38327,
-          "initialInvestment": 370000
-        },
-        {
-          "ticker": "VST",
-          "shares": 2679.606025,
-          "initialInvestment": 370000
-        },
-        {
-          "ticker": "BIRK",
-          "shares": 7591.240876,
-          "initialInvestment": 260000
-        }
+        { "ticker": "MU", "shares": 396.5702, "initialInvestment": 370000 },
+        { "ticker": "VST", "shares": 2700.72999, "initialInvestment": 370000 },
+        { "ticker": "BIRK", "shares": 7647.06, "initialInvestment": 260000 }
       ]
     },
     {
       "name": "Jack's Group",
       "positions": [
-        {
-          "ticker": "ANET",
-          "shares": 2641.868329,
-          "initialInvestment": 500000
-        },
-        {
-          "ticker": "LLY",
-          "shares": 215.517241,
-          "initialInvestment": 250000
-        },
-        {
-          "ticker": "CLS",
-          "shares": 854.437951,
-          "initialInvestment": 250000
-        }
+        { "ticker": "ANET", "shares": 2645.5026, "initialInvestment": 500000 },
+        { "ticker": "LLY", "shares": 215.7032, "initialInvestment": 250000 },
+        { "ticker": "CLS", "shares": 856.1644, "initialInvestment": 250000 }
       ]
     },
     {
       "name": "Colton's Group",
       "positions": [
-        {
-          "ticker": "AAPL",
-          "shares": 1025.230933,
-          "initialInvestment": 333333.3333
-        },
-        {
-          "ticker": "COST",
-          "shares": 354.625019,
-          "initialInvestment": 333333.3333
-        },
-        {
-          "ticker": "APLD",
-          "shares": 13723.068477,
-          "initialInvestment": 333333.3333
-        }
+        { "ticker": "AAPL", "shares": 1025.641, "initialInvestment": 333333.3333 },
+        { "ticker": "COST", "shares": 354.987575, "initialInvestment": 333333.3333 },
+        { "ticker": "APLD", "shares": 13888.89, "initialInvestment": 333333.3333 }
       ]
     },
     {
       "name": "Sawyer's group",
       "positions": [
-        {
-          "ticker": "AVGO",
-          "shares": 901.680733,
-          "initialInvestment": 333333.3333
-        },
-        {
-          "ticker": "TTWO",
-          "shares": 1538.36687,
-          "initialInvestment": 333333.3333
-        },
-        {
-          "ticker": "MSTR",
-          "shares": 2669.229126,
-          "initialInvestment": 333333.3333
-        }
+        { "ticker": "AVGO", "shares": 903.3423666, "initialInvestment": 333333.3333 },
+        { "ticker": "TTWO", "shares": 1543.209877, "initialInvestment": 333333.3333 },
+        { "ticker": "MSTR", "shares": 2666.666667, "initialInvestment": 333333.3333 }
       ]
     },
     {
       "name": "Lilyanna's group",
       "positions": [
-        {
-          "ticker": "UNH",
-          "shares": 841.113634,
-          "initialInvestment": 333333.3333
-        },
-        {
-          "ticker": "KO",
-          "shares": 3787.878787,
-          "initialInvestment": 333333.3333
-        },
-        {
-          "ticker": "SPOT",
-          "shares": 612.576189,
-          "initialInvestment": 333333.3333
-        }
+        { "ticker": "UNH", "shares": 841.7508, "initialInvestment": 333333.3333 },
+        { "ticker": "KO", "shares": 3787.878788, "initialInvestment": 333333.3333 },
+        { "ticker": "SPOT", "shares": 612.745098, "initialInvestment": 333333.3333 }
       ]
     }
   ]
